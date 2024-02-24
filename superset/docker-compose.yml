@@ -22,7 +22,7 @@ services:
     volumes:
       - cube_store_data:/cube/data
 
-  stack:
+  synmetrix:
     image: synmetrix/stack:${STACK_VERSION:-latest}
     restart: always
     ports:
