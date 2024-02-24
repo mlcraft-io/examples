@@ -1,6 +1,6 @@
 # Integrating Synmetrix with Apache Superset
 
-[Apache Superset][superset] is a leading open-source tool for data exploration and visualization, enabling users to dive deep into datasets and extract meaningful insights. For those seeking a managed Superset experience, [Preset][preset] provides a hassle-free, fully-managed Superset service.
+[Superset](https://superset.apache.org/) is a leading open-source tool for data exploration and visualization, enabling users to dive deep into datasets and extract meaningful insights. For those seeking a managed Superset experience, [Preset](https://preset.io) provides a hassle-free, fully-managed Superset service.
 
 ## Connecting Synmetrix to Superset Using SQL API
 
@@ -12,10 +12,16 @@ Connecting Apache Superset to Synmetrix treats Synmetrix as a PostgreSQL databas
 
 ### Configuring Synmetrix with Superset
 
+Ensure the following software is installed before proceeding:
+  - [Docker](https://docs.docker.com/install)
+  - [Docker Compose](https://docs.docker.com/compose/install)
+
+
+
 1. Start Synmetrix and Superset using Docker Compose provided in this directory. Run the following command to start the services:
 
 ```bash
-docker-compose pull synmetrix && docker-compose up -d 
+./1-start-containers.sh
 ```
 
 Before proceeding, ensure you have gone through the [Synmetrix Quick Start guide](https://docs.synmetrix.org/docs/quickstart#step-3-explore-synmetrix).
@@ -25,16 +31,30 @@ Synmetrix provided with seed data for the demo purposes.
 2. Set up the Superset database, users, and roles:
 
 ```bash
-./init-superset.sh
+./2-setup-superset.sh
 ```
 
 The default credentials are `admin` for both username and password. Feel free to modify these as needed.
 
+Wait until the services are up and running. You can check the status of the services using the following command:
+
+```bash
+./3-show-logs.sh
+```
+
+NOTE: to stop the services and remove volumes, run the following command:
+
+```bash
+./4-stop-containers.sh
+```
+
 ### Apache Superset Connection
 
-In Apache Superset, navigate to **Data > Databases** and choose **+ Database** to add a new database connection. Use the Synmetrix SQL API credentials for configuration:
+1. Go to: `http://localhost:9999`
 
-![Apache Superset: databases page](https://ucarecdn.com/cb3fe91a-6ce2-4c0e-8997-fdb2d4507beb/)
+2. In Apache Superset, navigate to **Settings -> Database Connections** and choose **+ Database** to add a new database connection. Use the Synmetrix SQL API credentials for configuration:
+
+![Apache Superset: databases page](https://ucarecdn.com/ac22a3f4-302e-4986-a116-c13cc6f5887d/-/preview/1000x574/)
 
 Use the following credentials to configure the connection:
 
@@ -70,6 +90,9 @@ This configuration enables the `orders` table to be used in Superset for creatin
 
 By connecting Synmetrix to Apache Superset, users gain the ability to visualize and interact with their data in a powerful and intuitive manner, enhancing data-driven decision-making processes across the organization.
 
+Please check Youtube video for the demo: 
+
+[![](https://img.youtube.com/vi/R3EjK0wTySc/0.jpg)](https://youtu.be/R3EjK0wTySc)
 
 ## Worth to check out
 
