@@ -11,6 +11,7 @@ Clone the repository and navigate to the directory of the example you want to ru
 - [Superset](superset/README.md)
 - [Observable](observable/README.md)
 - [DBeaver](dbeaver/README.md)
+- [Langchain](langchain/README.md)
 
 ## License
 

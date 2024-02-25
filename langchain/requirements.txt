@@ -1,0 +1,17 @@
+langchain==0.1.9
+langchain-community==0.0.24
+langchain-core==0.1.26
+langsmith==0.1.8
+numpy==1.26.4
+openai==1.12.0
+pandas==2.2.1
+pathlib==1.0.1
+psycopg2-binary==2.9.9
+python-dotenv==1.0.1
+requests==2.31.0
+SQLAlchemy==2.0.27
+streamlit==1.31.1
+urllib3==2.2.1
+tiktoken==0.6.0
+faiss-cpu==1.7.4
+langchain-openai==0.0.7
