@@ -90,9 +90,9 @@ This configuration enables the `orders` table to be used in Superset for creatin
 
 By connecting Synmetrix to Apache Superset, users gain the ability to visualize and interact with their data in a powerful and intuitive manner, enhancing data-driven decision-making processes across the organization.
 
-Please check Youtube video for the demo: 
+### Video Tutorial
 
-[![](https://img.youtube.com/vi/R3EjK0wTySc/0.jpg)](https://youtu.be/R3EjK0wTySc)
+[![](https://img.youtube.com/vi/TzLy88IAYZo/0.jpg)](https://youtu.be/TzLy88IAYZo)
 
 ## Worth to check out
 
