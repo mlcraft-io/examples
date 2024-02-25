@@ -2,6 +2,10 @@
 
 Connecting Synmetrix's SQL API via a PostgreSQL client like DBeaver offers a sophisticated interface for executing SQL queries on your data models. This guide details establishing a connection with DBeaver and suggests alternative PostgreSQL clients for flexibility in your workflow.
 
+### Getting Started
+
+Before proceeding, ensure you have completed Synmetrix's [Quick Start guide](https://docs.synmetrix.org/docs/quickstart#prerequisite-software).
+
 ### Setting Up DBeaver for Synmetrix
 
 1. **Install DBeaver**: Download and install DBeaver from [https://dbeaver.io/](https://dbeaver.io/).
