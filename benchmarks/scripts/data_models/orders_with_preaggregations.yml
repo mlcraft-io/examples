@@ -1,0 +1,29 @@
+cubes:
+  - name: Orders
+    sql: SELECT * FROM public.orders
+    joins: []
+
+    dimensions:
+      - name: id
+        sql: id
+        type: number
+        primaryKey: true
+
+      - name: createdAt
+        sql: created_at
+        type: time
+
+    measures:
+      - name: count
+        type: count
+
+      - name: amount
+        sql: amount
+        type: sum
+
+    preAggregations:
+      amountByCreated:
+        type: rollup,
+        measureReferences: [amount],
+        timeDimensionReference: createdAt,
+        granularity: month

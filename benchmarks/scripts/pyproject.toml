@@ -1,0 +1,4 @@
+[tool.ariadne-codegen]
+queries_path = "queries.graphql"
+remote_schema_url = "http://localhost/v1/graphql"
+remote_schema_headers = {"X-Hasura-Admin-Secret" = "adminsecret"}
