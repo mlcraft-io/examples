@@ -3,7 +3,7 @@
 This directory contains benchmarks for the Synmetrix backend. The benchmarks are
 
 - Cube caching benchmark
-- Cube pre-aggregations benchmark
+- Cube pre-aggregations (materialized views) benchmark
 - Synmetrix with Cube Highload benchmark: 1000 datasources with 1000 metrics each (1M metrics in total)
 
 ## Software Requirements
@@ -16,7 +16,7 @@ This directory contains benchmarks for the Synmetrix backend. The benchmarks are
 # Getting Started
 
 To run the benchmarks, you need to have Synmetrix a specific test environment running. 
-The test environment is a docker swarm services with cube and hasura replicas to simulate a real-world environment. 
+The test environment is a docker swarm services with cube and hasura replicas to simulate a real-world environment. [Test data](https://github.com/mlcraft-io/mlcraft/blob/main/tests/data/orders.sql) is generated and stored in PostgreSQL database.
 The test environment is described in the `docker-compose.test.yml` file in the root of the [Synmetrix repository](https://github.com/mlcraft-io/mlcraft/blob/main/docker-compose.test.yml).
 
 1. Clone the Synmetrix repository:
@@ -44,6 +44,12 @@ NOTE: Benchmarks uses Synmetrix seed data to run tests from `demo@synmetrix.org`
 
 ```bash
 ./run-benchmarks.sh
+```
+
+5. Stop the test Docker Swarm stack:
+
+```bash
+./cli.sh swarm destroy synmetrix-test
 ```
 
 # Results

@@ -13,6 +13,10 @@ Clone the repository and navigate to the directory of the example you want to ru
 - [DBeaver](dbeaver/README.md)
 - [Langchain](langchain/README.md)
 
+## Benchmarks
+
+- [Cube caching and highload](benchmarks/README.md)
+
 ## License
 
 This repository is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
