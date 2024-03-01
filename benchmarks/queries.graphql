@@ -46,16 +46,6 @@ mutation CreateVersion($object: versions_insert_input!) {
   }
 }
 
-mutation RunSourceSQLQuery(
-  $datasource_id: uuid!
-  $query: String!
-  $limit: Int!
-) {
-  run_query(datasource_id: $datasource_id, query: $query, limit: $limit) {
-    result
-  }
-}
-
 mutation DeleteDataSource($id: uuid!) {
   delete_datasources_by_pk(id: $id) {
     id

@@ -12,12 +12,12 @@ from graphql_client.input_types import (
     dataschemas_insert_input,
 )
 import requests
-import random
+import csv
+import yaml
 
-
-HASURA_GRAPHQL_URL = "http://localhost:8080/v1/graphql"
+HASURA_GRAPHQL_URL = "http://localhost/v1/graphql"
 LOGIN_URL = "http://localhost/auth/login"
-CUBE_LOAD_URL = "http://localhost:4000/api/v1/load"
+CUBE_LOAD_URL = "http://localhost/api/v1/load"
 
 USER_LOGIN = "demo@synmetrix.org"
 USER_PASS = "demodemo"
@@ -55,7 +55,9 @@ def login(email, password):
     return response.json()
 
 
-def load_cube_data(jwt_token, datasource_id, branch_id, query, retry_count=0, timeout=60):
+async def load_cube_data(
+    jwt_token, datasource_id, branch_id, query, retry_count=0, timeout=60
+):
     headers = {
         "Content-Type": "application/json",
         "Authorization": f"Bearer {jwt_token}",
@@ -65,22 +67,19 @@ def load_cube_data(jwt_token, datasource_id, branch_id, query, retry_count=0, ti
     data = {
         "query": query,
     }
-
-    def generate_random_port():
-        return random.randint(4001, 4007)
-
-    port = generate_random_port()
-    CUBE_LOAD_URL = f"http://localhost:{port}/api/v1/load"
-    response = requests.post(CUBE_LOAD_URL, headers=headers, json=data, timeout=timeout)
+    response = await asyncio.to_thread(
+        requests.post, CUBE_LOAD_URL, headers=headers, json=data, timeout=timeout
+    )
     if response.status_code == 200 and response.json().get("error") == "Continue wait":
         if retry_count < 20:
-            return load_cube_data(
-                jwt_token, datasource_id, branch_id, query, retry_count + 1
+            await asyncio.sleep(5)
+            return await load_cube_data(
+                jwt_token, datasource_id, branch_id, query, retry_count + 1, timeout
             )
-    
     if response.status_code != 200:
-        raise Exception(f"Failed to load cube data: {response.status_code} {response.text}")
-
+        raise Exception(
+            f"Failed to load cube data: {response.status_code} {response.text}"
+        )
     return response.json()
 
 
@@ -165,6 +164,38 @@ async def delete_datasource(jwt_token, datasource_id):
     await client.delete_data_source(datasource_id)
 
 
+def save_trials_to_csv(trials, filename):
+    # Write trials data to CSV
+    with open(filename, "w", newline="") as file:
+        file.truncate(0)  # Clear the file before writing
+        writer = csv.writer(file)
+        writer.writerow(["Trial", "Elapsed Time"])
+        for i, elapsed_time in enumerate(trials, start=1):
+            writer.writerow([i, elapsed_time])
+
+    return True
+
+
+def save_highload_test_to_csv(trials, filename):
+    # Write trials data to CSV
+    with open(filename, "w", newline="") as file:
+        file.truncate(0)  # Clear the file before writing
+        writer = csv.writer(file)
+        writer.writerow(
+            [
+                "Trial",
+                "Models Count",
+                "Metrics Count",
+                "Test Query Rows Count",
+                "Elapsed Time",
+            ]
+        )
+        for i, row in enumerate(trials, start=1):
+            writer.writerow([i, row[0], row[1], row[2], row[3]])
+
+    return True
+
+
 async def test_cache(jwt_token, datasource_id, branch_id, user_id):
     code = ""
     with open("data_models/version_1/orders.yml", "r") as file:
@@ -173,18 +204,18 @@ async def test_cache(jwt_token, datasource_id, branch_id, user_id):
     await create_version(jwt_token, datasource_id, branch_id, user_id, code)
 
     load_benchmark = []
-    for i in range(10):
+    for i in range(50):
         print(f"Trial {i + 1}")
         start_time = time.time()
-        load_cube_data(
+        await load_cube_data(
             jwt_token,
             datasource_id,
             branch_id,
             {
-                "measures": ["Orders.amount"],
+                "measures": ["OrdersVersion1.amount"],
                 "timeDimensions": [
                     {
-                        "dimension": "Orders.createdAt",
+                        "dimension": "OrdersVersion1.createdAt",
                         "granularity": "month",
                         "dateRange": ["1997-01-01", "2017-01-01"],
                     }
@@ -201,40 +232,42 @@ async def test_cache(jwt_token, datasource_id, branch_id, user_id):
     max_load_time = max(load_benchmark)
     min_load_time = min(load_benchmark)
 
-    pct_change = ((max_load_time - min_load_time) / min_load_time) * 100
-    pct_change_avg = ((max_load_time - avg_load_time) / avg_load_time) * 100
+    save_trials_to_csv(load_benchmark, "results/test_cache.csv")
 
     print(f"Trials: {len(load_benchmark)}, Average Load Time: {avg_load_time} seconds")
     print(
         f"Max Load Time: {max_load_time} seconds, Min Load Time: {min_load_time} seconds"
     )
-    print(
-        f"Min/Max % Change: {round(pct_change)}%, Avg/Max % Change: {round(pct_change_avg)}%"
-    )
 
 
-async def test_preaggregations(jwt_token, datasource_id, branch_id, user_id):
-    code = ""
-    with open("data_models/version_2/orders_with_preaggregations.yml", "r") as file:
-        code = file.read()
+async def test_preaggregations(
+    jwt_token,
+    datasource_id,
+    branch_id,
+    user_id,
+    version=True,
+):
+    if version:
+        code = ""
+        with open("data_models/version_2/orders_with_preaggregations.yml", "r") as file:
+            code = file.read()
 
-    await create_version(jwt_token, datasource_id, branch_id, user_id, code)
+        await create_version(jwt_token, datasource_id, branch_id, user_id, code)
 
     load_benchmark = []
-    for i in range(10):
+    for i in range(50):
         print(f"Trial {i + 1}")
         start_time = time.time()
-        load_cube_data(
+        await load_cube_data(
             jwt_token,
             datasource_id,
             branch_id,
             {
-                "measures": ["Orders.amount"],
+                "measures": ["OrdersVersion2.amount"],
                 "timeDimensions": [
                     {
-                        "dimension": "Orders.createdAt",
+                        "dimension": "OrdersVersion2.createdAt",
                         "granularity": "month",
-                        "dateRange": ["1997-01-01", "2017-01-01"],
                     }
                 ],
             },
@@ -248,26 +281,30 @@ async def test_preaggregations(jwt_token, datasource_id, branch_id, user_id):
     max_load_time = max(load_benchmark)
     min_load_time = min(load_benchmark)
 
-    pct_change = ((max_load_time - min_load_time) / min_load_time) * 100
-    pct_change_avg = ((max_load_time - avg_load_time) / avg_load_time) * 100
+    filename = (
+        "results/test_preaggregations_1st_run.csv"
+        if version
+        else "results/test_preaggregations_2nd_run.csv"
+    )
+    save_trials_to_csv(load_benchmark, filename)
 
     print(f"Trials: {len(load_benchmark)}, Average Load Time: {avg_load_time} seconds")
     print(
         f"Max Load Time: {max_load_time} seconds, Min Load Time: {min_load_time} seconds"
-    )
-    print(
-        f"Min/Max % Change: {round(pct_change)}%, Avg/Max % Change: {round(pct_change_avg)}%"
     )
 
 
 async def test_1mil_metrics(jwt_token, datasource_id, branch_id, user_id, n):
     models = []
 
-    print(f"Creating model {n}")
+    print(f"Inserting model models_{n}.yml")
 
     code = ""
+    measures_count = 0
     with open(f"data_models/version_3/models_{n}.yml", "r") as file:
         code = file.read()
+        yaml_tree = yaml.safe_load(code)
+        measures_count = len(yaml_tree["cubes"][0]["measures"])
         models.append(
             dataschemas_insert_input(
                 name=f"Orders_{n}.yml",
@@ -279,48 +316,33 @@ async def test_1mil_metrics(jwt_token, datasource_id, branch_id, user_id, n):
 
     await create_version(jwt_token, datasource_id, branch_id, user_id, None, models)
 
-    load_benchmark = []
-    for i in range(1):
-        print(f"Trial {i + 1}")
-        start_time = time.time()
-        try:
-            load_cube_data(
-                jwt_token,
-                datasource_id,
-                branch_id,
-                {
-                    "measures": [f"Orders_{n}.measure_0"],
-                    "timeDimensions": [
-                        {
-                            "dimension": f"Orders_{n}.createdAt",
-                            "granularity": "month",
-                            "dateRange": ["1997-01-01", "2017-01-01"],
-                        }
-                    ],
-                },
-            )
-        except Exception as e:
-            print(e)
+    rows_len = 0
+    start_time = time.time()
+    try:
+        res = await load_cube_data(
+            jwt_token,
+            datasource_id,
+            branch_id,
+            {
+                "measures": [f"Orders_{n}.measure_0"],
+                "timeDimensions": [
+                    {
+                        "dimension": f"Orders_{n}.createdAt",
+                        "granularity": "month",
+                        "dateRange": ["1997-01-01", "2017-01-01"],
+                    }
+                ],
+            },
+        )
+        rows_len = len(res["data"])
+    except Exception as e:
+        print(e)
 
-        end_time = time.time()
-        elapsed_time = end_time - start_time
-        load_benchmark.append(elapsed_time)
-        print(f"Elapsed time: {elapsed_time} seconds")
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    print(f"Elapsed time: {elapsed_time} seconds")
 
-    avg_load_time = sum(load_benchmark) / len(load_benchmark)
-    max_load_time = max(load_benchmark)
-    min_load_time = min(load_benchmark)
-
-    pct_change = ((max_load_time - min_load_time) / min_load_time) * 100
-    pct_change_avg = ((max_load_time - avg_load_time) / avg_load_time) * 100
-
-    print(f"Trials: {len(load_benchmark)}, Average Load Time: {avg_load_time} seconds")
-    print(
-        f"Max Load Time: {max_load_time} seconds, Min Load Time: {min_load_time} seconds"
-    )
-    print(
-        f"Min/Max % Change: {round(pct_change)}%, Avg/Max % Change: {round(pct_change_avg)}%"
-    )
+    return (len(models), measures_count, rows_len, elapsed_time)
 
 
 async def main():
@@ -335,28 +357,45 @@ async def main():
 
     team_id, user_id = await current_user(jwt_token, user_id)
 
-    # new_data_source_id, branch_id = await create_data_source(
-    #     jwt_token, team_id, user_id
-    # )
-    # print("==== Testing cache ====")
-    # await test_cache(jwt_token, new_data_source_id, branch_id, user_id)
-    # await delete_datasource(jwt_token, new_data_source_id)
+    # test queries cache
+    print("==== Testing cache ====")
+    new_data_source_id, branch_id = await create_data_source(
+        jwt_token, team_id, user_id
+    )
+    await test_cache(jwt_token, new_data_source_id, branch_id, user_id)
+    await delete_datasource(jwt_token, new_data_source_id)
 
-    # new_data_source_id, branch_id = await create_data_source(
-    #     jwt_token, team_id, user_id
-    # )
-    # print("==== Testing preaggregations ====")
-    # await test_preaggregations(jwt_token, new_data_source_id, branch_id, user_id)
-    # await delete_datasource(jwt_token, new_data_source_id)
+    # test preaggregations
+    print("==== Testing preaggregations ====")
+    new_data_source_id, branch_id = await create_data_source(
+        jwt_token, team_id, user_id
+    )
+    await test_preaggregations(jwt_token, new_data_source_id, branch_id, user_id)
+    print("==== Testing preaggregations again ====")
+    await test_preaggregations(
+        jwt_token, new_data_source_id, branch_id, user_id, version=False
+    )
+    await delete_datasource(jwt_token, new_data_source_id)
+
+    # test 1 million metrics
+    print("==== Testing 1000 datasources with 1000 metrics ====")
 
     new_datasources = []
+    trials = []
     for i in range(999):
+        print(f"Creating datasource {i+1}")
+
         new_data_source_id, branch_id = await create_data_source(
             jwt_token, team_id, user_id, name=f"Test Data Source {i+1}"
         )
 
+        trial = await test_1mil_metrics(
+            jwt_token, new_data_source_id, branch_id, user_id, i
+        )
+        trials.append(trial)
         new_datasources.append(new_data_source_id)
-        await test_1mil_metrics(jwt_token, new_data_source_id, branch_id, user_id, i)
+
+    save_highload_test_to_csv(trials, "results/test_1mil_metrics.csv")
 
     for new_data_source_id in new_datasources:
         await delete_datasource(jwt_token, new_data_source_id)

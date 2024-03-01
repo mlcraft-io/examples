@@ -1,13 +1,15 @@
 cubes:
-  - name: Orders
+  - name: OrdersVersion2
     sql: SELECT * FROM public.orders
+    refresh_key:
+      every: 1 hour
     joins: []
 
     dimensions:
       - name: id
         sql: id
         type: number
-        primaryKey: true
+        primary_key: true
 
       - name: createdAt
         sql: created_at
@@ -20,3 +22,11 @@ cubes:
       - name: amount
         sql: amount
         type: sum
+
+    pre_aggregations:
+      - name: amount_by_created_at
+        type: rollup
+        measures:
+          - CUBE.amount
+        time_dimension: CUBE.createdAt
+        granularity: month
