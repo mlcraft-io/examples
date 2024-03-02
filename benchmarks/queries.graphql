@@ -1,0 +1,53 @@
+query CurrentUser($id: uuid!) {
+  users_by_pk(id: $id) {
+    id
+    display_name
+    avatar_url
+    account {
+      email
+    }
+
+    members(order_by: { updated_at: desc }) {
+      member_roles {
+        team_role
+      }
+      user {
+        id
+        avatar_url
+        display_name
+        account {
+          email
+        }
+      }
+      team {
+        id
+        name
+      }
+    }
+  }
+}
+
+mutation CreateDataSource($object: datasources_insert_input!) {
+  insert_datasources_one(object: $object) {
+    id
+    name
+    branches {
+      id
+    }
+    sql_credentials {
+      id
+    }
+  }
+}
+
+mutation CreateVersion($object: versions_insert_input!) {
+  insert_versions_one(object: $object) {
+    id
+  }
+}
+
+mutation DeleteDataSource($id: uuid!) {
+  delete_datasources_by_pk(id: $id) {
+    id
+  }
+}
