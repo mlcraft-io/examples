@@ -21,7 +21,7 @@ Before proceeding, ensure you have completed Synmetrix's [Quick Start guide](htt
 1. Setup python environment and install the required packages:
 
 ```bash
-source create-env.sh
+source create-venv.sh
 ```
 
 2. Copy the Synmetrix Access Token
