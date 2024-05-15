@@ -1,3 +1,4 @@
 .DS_Store
 .benchmarks_venv
 __pycache__
+/benchmarks/mlcraft

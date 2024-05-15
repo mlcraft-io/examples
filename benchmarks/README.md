@@ -19,11 +19,22 @@ To run the benchmarks, you need to have Synmetrix a specific test environment ru
 The test environment is a docker swarm services with cube and hasura replicas to simulate a real-world environment. [Test data](https://github.com/mlcraft-io/mlcraft/blob/main/tests/data/orders.sql) is generated and stored in PostgreSQL database.
 The test environment is described in the `docker-compose.test.yml` file in the root of the [Synmetrix repository](https://github.com/mlcraft-io/mlcraft/blob/main/docker-compose.test.yml).
 
+### Clone this repository:
+
+```bash
+git clone https://github.com/mlcraft-io/examples
+```
+
+and navigate to the `benchmarks` folder:
+
+```bash
+cd examples/benchmarks
+```
+
 1. Clone the Synmetrix repository:
 
 ```bash
-git clone https://github.com/mlcraft-io/mlcraft
-cd mlcraft
+git clone https://github.com/mlcraft-io/mlcraft && cd mlcraft
 ```
 
 2. Start the test Docker Swarm stack:
@@ -43,13 +54,13 @@ NOTE: Benchmarks uses Synmetrix seed data to run tests from `demo@synmetrix.org`
 4. Run the benchmarks:
 
 ```bash
-./run-benchmarks.sh
+cd ../ && ./run-benchmarks.sh
 ```
 
 5. Stop the test Docker Swarm stack:
 
 ```bash
-./cli.sh swarm destroy synmetrix-test
+cd mlcraft && ./cli.sh swarm destroy synmetrix-test
 ```
 
 # Results

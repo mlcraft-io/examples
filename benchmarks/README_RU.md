@@ -10,7 +10,6 @@
 
 - [Docker](https://docs.docker.com/install)
 - [Node.js (версия 20.8.1 или выше)](https://nodejs.org/en/download/)
-- [Node.js (Version 20.8.1 or above)](https://nodejs.org/en/download/)
 - [Yarn](https://yarnpkg.com/getting-started/install)
 - [Python 3.9](https://www.python.org/downloads/)
 
@@ -20,11 +19,22 @@
 Тестовая среда представляет собой сервисы docker swarm с репликами cube и hasura для имитации реальной среды. [Тестовые данные](https://github.com/mlcraft-io/mlcraft/blob/main/tests/data/orders.sql) генерируются и хранятся в базе данных PostgreSQL.
 Тестовая среда описана в файле `docker-compose.test.yml` в корне [репозитория Synmetrix](https://github.com/mlcraft-io/mlcraft/blob/main/docker-compose.test.yml).
 
+### Клонируйте этот репозиторий:
+
+```bash
+git clone https://github.com/mlcraft-io/examples
+```
+
+и перейдите в папку `benchmarks`:
+
+```bash
+cd examples/benchmarks
+```
+
 1. Клонируйте репозиторий Synmetrix:
 
 ```bash
-git clone https://github.com/mlcraft-io/mlcraft
-cd mlcraft
+git clone https://github.com/mlcraft-io/mlcraft && cd mlcraft
 ```
 
 2. Запустите стек Docker Swarm:
@@ -44,13 +54,13 @@ cd mlcraft
 4. Запустите бенчмарки:
 
 ```bash
-./run-benchmarks.sh
+cd ../ && ./run-benchmarks.sh
 ```
 
 5. Остановите стек Docker Swarm:
 
 ```bash
-./cli.sh swarm destroy synmetrix-test
+cd mlcraft && ./cli.sh swarm destroy synmetrix-test
 ```
 
 # Результаты
