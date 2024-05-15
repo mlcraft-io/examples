@@ -17,6 +17,18 @@ Ensure the following software is installed before proceeding:
   - [Docker Compose](https://docs.docker.com/compose/install)
 
 
+Clone this repository:
+
+```bash
+git clone https://github.com/mlcraft-io/examples
+```
+
+and navigate to the `superset` folder:
+
+```bash
+cd examples/superset
+```
+
 
 1. Start Synmetrix and Superset using Docker Compose provided in this directory. Run the following command to start the services:
 

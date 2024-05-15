@@ -16,6 +16,17 @@ Synmetrix с его надежным SQL API позволяет легко по�
   - [Docker](https://docs.docker.com/install)
   - [Docker Compose](https://docs.docker.com/compose/install)
 
+Клонируйте этот репозиторий:
+
+```bash
+git clone https://github.com/mlcraft-io/examples
+```
+
+и перейдите в папку `superset`:
+
+```bash
+cd examples/superset
+```
 
 1. Используйте Docker Compose из этого каталога для запуска Synmetrix и Superset. Для начала работы с сервисами выполните следующую команду:
 

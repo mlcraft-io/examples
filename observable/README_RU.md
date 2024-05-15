@@ -12,6 +12,18 @@
 - [Node.js (версия 20.8.1 или выше)](https://nodejs.org/en/download/)
 - [Yarn](https://yarnpkg.com/getting-started/install)
 
+Клонируйте этот репозиторий:
+
+```bash
+git clone https://github.com/mlcraft-io/examples
+```
+
+и перейдите в папку `observable`:
+
+```bash
+cd examples/observable
+```
+
 ## Настройка Synmetrix для работы с Observable
 
 ### Скопируйте ключ API Synmetrix

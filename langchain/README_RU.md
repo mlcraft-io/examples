@@ -17,6 +17,18 @@
 - Python 3.9 или более поздняя версия
 - PIP (менеджер пакетов Python)
 
+Клонируйте этот репозиторий:
+
+```bash
+git clone https://github.com/mlcraft-io/examples
+```
+
+и перейдите в папку `langchain`:
+
+```bash
+cd examples/langchain
+```
+
 ## Настройка Synmetrix с LLM
 
 1. Настройте среду Python и установите необходимые пакеты:

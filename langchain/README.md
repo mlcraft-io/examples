@@ -16,6 +16,18 @@ Before proceeding, ensure you have completed Synmetrix's [Quick Start guide](htt
 - Python 3.9 or later
 - PIP (Python package manager)
 
+Clone this repository:
+
+```bash
+git clone https://github.com/mlcraft-io/examples
+```
+
+and navigate to the `langchain` folder:
+
+```bash
+cd examples/langchain
+```
+
 ## Setting Up Synmetrix with LLM
 
 1. Setup python environment and install the required packages:

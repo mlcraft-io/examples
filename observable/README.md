@@ -11,6 +11,18 @@ Before proceeding, ensure you have completed Synmetrix's [Quick Start guide](htt
 - [Node.js (Version 20.8.1 or above)](https://nodejs.org/en/download/)
 - [Yarn](https://yarnpkg.com/getting-started/install)
 
+Clone this repository:
+
+```bash
+git clone https://github.com/mlcraft-io/examples
+```
+
+and navigate to the `observable` folder:
+
+```bash
+cd examples/observable
+```
+
 ## Setting Up Synmetrix with Observable
 
 ### Copy the Synmetrix API Key
