@@ -6,6 +6,11 @@ This is a guide to integrating [Synmetrix](https://synmetrix.org) with [Observab
 
 Before proceeding, ensure you have completed Synmetrix's [Quick Start guide](https://docs.synmetrix.org/docs/quickstart#prerequisite-software).
 
+### Required Software
+
+- [Node.js (Version 20.8.1 or above)](https://nodejs.org/en/download/)
+- [Yarn](https://yarnpkg.com/getting-started/install)
+
 ## Setting Up Synmetrix with Observable
 
 ### Copy the Synmetrix API Key

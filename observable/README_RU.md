@@ -6,6 +6,12 @@
 
 Прежде чем продолжить, убедитесь, что вы выполнили [Быстрый старт Synmetrix](https://docs.synmetrix.org/docs/quickstart#prerequisite-software).
 
+
+### Необходимое программное обеспечение
+
+- [Node.js (версия 20.8.1 или выше)](https://nodejs.org/en/download/)
+- [Yarn](https://yarnpkg.com/getting-started/install)
+
 ## Настройка Synmetrix для работы с Observable
 
 ### Скопируйте ключ API Synmetrix
