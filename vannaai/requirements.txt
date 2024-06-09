@@ -1,0 +1,3 @@
+chainlit==1.1.202
+vanna[qdrant,openai,postgres]==0.5.5
+urllib3==2.2.1
