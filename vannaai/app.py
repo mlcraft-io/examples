@@ -51,7 +51,10 @@ async def gen_query(human_query: str):
 
 
 @cl.step(root=True, name="")
-async def execute_query(query):
+async def execute_query(query: str):
+    if not vn.is_sql_valid(query):
+        raise ValueError("Query is not a valid SQL query")
+
     current_step = cl.context.current_step
     df = vn.run_sql(query)
     current_step.output = df.head().to_markdown(index=False)
@@ -71,7 +74,11 @@ async def plot(human_query, sql, df):
 
 @cl.step(type="run", root=True, name=ASSISTANT_NAME)
 async def chain(human_query: str):
-    sql_query = await gen_query(human_query)
+    if vn.is_sql_valid(human_query):
+        sql_query = human_query
+    else:
+        sql_query = await gen_query(human_query)
+
     df = await execute_query(sql_query)
     fig = await plot(human_query, sql_query, df)
 
