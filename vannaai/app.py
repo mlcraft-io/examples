@@ -1,18 +1,16 @@
 import os
 from urllib.parse import urlparse
 
-from vanna.flask import VannaFlaskApp
 from vanna.openai import OpenAI_Chat
 from vanna.qdrant import Qdrant_VectorStore
-from qdrant_client import QdrantClient
 import chainlit as cl
 from chainlit.input_widget import Select
-import os
 
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 CONNECTION_STRING = os.getenv("PG_CONNECTION_STRING")
 QDRANT_URL = os.getenv("QDRANT_URL")
+
 
 class Vanna(Qdrant_VectorStore, OpenAI_Chat):
     def __init__(self, config):
@@ -71,7 +69,7 @@ async def plot(human_query, sql, df):
 @cl.step(type="run", root=True, name="Vanna")
 async def chain(human_query: str):
     sql_query = await gen_query(human_query)
-    df = await execute_query(sql_query)    
+    df = await execute_query(sql_query)
     fig = await plot(human_query, sql_query, df)
 
     elements = [cl.Plotly(name="chart", figure=fig, display="inline")]

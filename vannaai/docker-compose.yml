@@ -3,8 +3,6 @@ version: '3.8'
 services:
   redis:
     image: redis:7.0.0
-    ports:
-      - 6379:6379
 
   postgres:
     image: postgres:${POSTGRES_VERSION:-12}
@@ -50,9 +48,6 @@ services:
   qdrant:
     image: qdrant/qdrant:latest
     restart: always
-    ports:
-      - 6333:6333
-      - 6334:6334
     env_file:
       - .env
     volumes:
