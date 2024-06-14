@@ -41,13 +41,16 @@ plan = vn.get_training_plan_generic(df_information_schema)
 vn.train(plan=plan)
 
 
-@cl.step(root=True, language="sql", name="Vanna")
+ASSISTANT_NAME = "Synmetrix"
+
+
+@cl.step(root=True, language="sql", name=ASSISTANT_NAME)
 async def gen_query(human_query: str):
     sql_query = vn.generate_sql(human_query)
     return sql_query
 
 
-@cl.step(root=True, name="Vanna")
+@cl.step(root=True, name="")
 async def execute_query(query):
     current_step = cl.context.current_step
     df = vn.run_sql(query)
@@ -66,14 +69,16 @@ async def plot(human_query, sql, df):
     return fig
 
 
-@cl.step(type="run", root=True, name="Vanna")
+@cl.step(type="run", root=True, name=ASSISTANT_NAME)
 async def chain(human_query: str):
     sql_query = await gen_query(human_query)
     df = await execute_query(sql_query)
     fig = await plot(human_query, sql_query, df)
 
     elements = [cl.Plotly(name="chart", figure=fig, display="inline")]
-    await cl.Message(content=human_query, elements=elements, author="Vanna").send()
+    await cl.Message(
+        content=human_query, elements=elements, author=ASSISTANT_NAME
+    ).send()
 
 
 @cl.on_message
@@ -88,7 +93,12 @@ async def setup():
             Select(
                 id="Model",
                 label="OpenAI - Model",
-                values=["gpt-3.5-turbo", "gpt-3.5-turbo-16k", "gpt-4", "gpt-4-32k"],
+                values=[
+                    "gpt-4o",
+                    "gpt-4-turbo",
+                    "gpt-4",
+                    "gpt-3.5-turbo",
+                ],
                 initial_index=0,
             )
         ]
