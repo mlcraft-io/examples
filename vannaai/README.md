@@ -1,6 +1,6 @@
 # Integrating Synmetrix with Vanna+Chainlit
 
-[Chainlit](https://github.com/Chainlit/chainlitmlc) — is a versatile asynchronous Python framework that enables the creation of scalable applications for conversational artificial intelligence and agent applications. Providing support for interfaces like ChatGPT, embedded chatbots, customizable user interfaces, and integration with other platforms.
+[Chainlit](https://github.com/Chainlit/chainlit) — is a versatile asynchronous Python framework that enables the creation of scalable applications for conversational artificial intelligence and agent applications. Providing support for interfaces like ChatGPT, embedded chatbots, customizable user interfaces, and integration with other platforms.
 [Vanna](https://github.com/vanna-ai/vanna) — is an open-source framework for generating SQL queries and related functions. Developed in Python, Vanna utilizes Retrieval-Augmented Generation (RAG) technology, which significantly simplifies the process of working with data and speeds up the retrieval of necessary information, easily converting natural language questions into precise SQL queries, making working with databases more accessible and efficient.
 
 ### Configuring Synmetrix with Vanna+Chainlit
@@ -29,8 +29,6 @@ cd examples/vannaai
 ./1-start-containers.sh
 ```
 
-Перед продолжением убедитесь, что вы ознакомились с [Руководством по быстрому старту Synmetrix](https://docs.synmetrix.org/docs/quickstart#step-3-explore-synmetrix).
-
 Before proceeding, ensure you have reviewed the [Synmetrix Quick Start Guide](https://docs.synmetrix.org/docs/quickstart#step-3-explore-synmetrix).
 
 Wait until the services are up and running. You can check the status of services using the following command:
@@ -53,6 +51,6 @@ The integration of Synmetrix with Vanna+Chainlit allows users to retrieve data u
 
 ## Key References
 
-* [Chainlit](https://github.com/Chainlit/chainlitmlc)
+* [Chainlit](https://github.com/Chainlit/chainlit)
 * [Vanna](https://github.com/vanna-ai/vanna)
 * [SQL API](https://docs.synmetrix.org/docs/core-concepts/sql-interface)
