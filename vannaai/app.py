@@ -1,6 +1,7 @@
 import os
 from urllib.parse import urlparse
 from typing import Optional
+import pandas as pd
 
 import chainlit as cl
 import chainlit.data as cl_data
@@ -65,25 +66,26 @@ def gen_query_recursive(human_query: str, trials: int = 3):
     return sql_query
 
 
-@cl.step(language="sql", name=ASSISTANT_NAME)
+@cl.step(name="Generate SQL", type="tool", language="sql", show_input=False)
 async def gen_query(human_query: str):
     sql_query = gen_query_recursive(human_query)
     return sql_query
 
 
-@cl.step(name="")
-async def execute_query(query: str):
-    current_step = cl.context.current_step
-    df = vn.run_sql(query)
-    current_step.output = df.head().to_markdown(index=False)
-
-    return df
+@cl.step(name="Preview dataframe", type="tool", show_input=False)
+async def preview_df(df: pd.DataFrame):
+    return df.to_markdown(index=False)
 
 
-@cl.step(name="Plot", language="python")
+@cl.step(name="Generate plotly code", type="tool", language="python", show_input=False)
+async def generate_plotly_code(human_query, sql, df):
+    return vn.generate_plotly_code(question=human_query, sql=sql, df=df)
+
+
+@cl.step(name="Plot", show_input=False)
 async def plot(human_query, sql, df):
     current_step = cl.context.current_step
-    plotly_code = vn.generate_plotly_code(question=human_query, sql=sql, df=df)
+    plotly_code = await generate_plotly_code(human_query, sql, df)
     fig = vn.get_plotly_figure(plotly_code=plotly_code, df=df)
 
     current_step.output = plotly_code
@@ -98,7 +100,9 @@ async def chain(human_query: str):
         sql_query = await gen_query(human_query)
 
     try:
-        df = await execute_query(sql_query)
+        df = vn.run_sql(sql_query)
+        await preview_df(df)
+
         fig = await plot(human_query, sql_query, df)
         elements = [cl.Plotly(name="chart", figure=fig, display="inline")]
 
@@ -120,3 +124,24 @@ def auth_callback(username: str, password: str) -> Optional[cl.User]:
         return cl.User(identifier="admin")
     else:
         return None
+
+
+@cl.set_chat_profiles
+async def chat_profile():
+    return [
+        cl.ChatProfile(
+            name=" ",
+            icon="/public/avatars/default.png",
+            markdown_description="The underlying LLM model is **GPT-4o**",
+            starters=[
+                cl.Starter(
+                    label="Show all available tables",
+                    message="Show all available tables in the database",
+                ),
+                cl.Starter(
+                    label="Explain superconductors",
+                    message="Explain superconductors like I'm five years old.",
+                ),
+            ],
+        )
+    ]

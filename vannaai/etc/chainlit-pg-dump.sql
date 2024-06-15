@@ -1,3 +1,5 @@
+CREATE EXTENSION pgcrypto;
+
 CREATE TABLE users (
     "id" UUID PRIMARY KEY,
     "identifier" TEXT NOT NULL UNIQUE,
@@ -5,7 +7,7 @@ CREATE TABLE users (
     "createdAt" TEXT
 );
 
-INSERT INTO users (id, identifier, metadata, createdAt) VALUES (gen_random_uuid(), 'admin', '{}', now());
+INSERT INTO users ("id", "identifier", "metadata", "createdAt") VALUES (gen_random_uuid(), 'admin', '{}'::jsonb, now());
 
 CREATE TABLE IF NOT EXISTS threads (
     "id" UUID PRIMARY KEY,
