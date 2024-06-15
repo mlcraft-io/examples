@@ -4,6 +4,16 @@ services:
   redis:
     image: redis:7.0.0
 
+  chainlit-postgres:
+    image: postgres:${POSTGRES_VERSION:-12}
+    volumes:
+      - chainlit_pg_db_data:/var/lib/postgresql/data
+      - ./etc/chainlit-pg-dump.sql:/docker-entrypoint-initdb.d/chainlit-pg-dump.sql
+    environment:
+      POSTGRES_USER: chainlit
+      POSTGRES_PASSWORD: pg_pass
+      POSTGRES_DB: chainlit
+
   postgres:
     image: postgres:${POSTGRES_VERSION:-12}
     volumes:
@@ -63,7 +73,13 @@ services:
     env_file:
       - .env
 
+  wdb:
+    image: shepilovvladislav/wdb:latest
+    ports:
+      - 1990:1984
+
 volumes:
   pg_db_data:
+  chainlit_pg_db_data:
   cube_store_data:
   qdrant-data:
