@@ -10,4 +10,4 @@ RUN pip --no-cache-dir install -r requirements.txt
 
 COPY . .
 
-CMD ["chainlit", "run", "app.py"]
+CMD ["chainlit", "run", "app.py", "-W"]

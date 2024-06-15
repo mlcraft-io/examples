@@ -1,5 +1,4 @@
 *.venv
-*.chainlit
 .DS_Store
 .benchmarks_venv
 __pycache__

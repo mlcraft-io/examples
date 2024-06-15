@@ -79,13 +79,16 @@ async def chain(human_query: str):
     else:
         sql_query = await gen_query(human_query)
 
-    df = await execute_query(sql_query)
-    fig = await plot(human_query, sql_query, df)
+    try:
+        df = await execute_query(sql_query)
+        fig = await plot(human_query, sql_query, df)
+        elements = [cl.Plotly(name="chart", figure=fig, display="inline")]
 
-    elements = [cl.Plotly(name="chart", figure=fig, display="inline")]
-    await cl.Message(
-        content=human_query, elements=elements, author=ASSISTANT_NAME
-    ).send()
+        await cl.Message(
+            content=human_query, elements=elements, author=ASSISTANT_NAME
+        ).send()
+    except ValueError as e:
+        await cl.Message(content=f"Query failed: {e}", author=ASSISTANT_NAME).send()
 
 
 @cl.on_message
