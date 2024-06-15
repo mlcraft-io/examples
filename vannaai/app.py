@@ -137,6 +137,7 @@ async def chat_profile():
                 cl.Starter(
                     label="Show all available cubes",
                     message="Show all available tables in the database",
+                    icon="/public/starter-icon.png",
                 ),
             ],
         )
