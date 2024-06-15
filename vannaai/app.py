@@ -8,6 +8,7 @@ import chainlit.data as cl_data
 from chainlit.data.sql_alchemy import SQLAlchemyDataLayer
 from vanna.openai import OpenAI_Chat
 from vanna.qdrant import Qdrant_VectorStore
+from vanna.exceptions import ValidationError
 
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
@@ -110,6 +111,8 @@ async def chain(human_query: str):
             content=human_query, elements=elements, author=ASSISTANT_NAME
         ).send()
     except ValueError as e:
+        await cl.Message(content=f"Query failed: {e}", author=ASSISTANT_NAME).send()
+    except ValidationError as e:
         await cl.Message(content=f"Query failed: {e}", author=ASSISTANT_NAME).send()
 
 
