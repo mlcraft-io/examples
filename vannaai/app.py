@@ -135,12 +135,8 @@ async def chat_profile():
             markdown_description="The underlying LLM model is **GPT-4o**",
             starters=[
                 cl.Starter(
-                    label="Show all available tables",
+                    label="Show all available cubes",
                     message="Show all available tables in the database",
-                ),
-                cl.Starter(
-                    label="Explain superconductors",
-                    message="Explain superconductors like I'm five years old.",
                 ),
             ],
         )
