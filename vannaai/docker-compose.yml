@@ -1,0 +1,85 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:7.0.0
+
+  chainlit-postgres:
+    image: postgres:${POSTGRES_VERSION:-12}
+    volumes:
+      - chainlit_pg_db_data:/var/lib/postgresql/data
+      - ./etc/chainlit-pg-dump.sql:/docker-entrypoint-initdb.d/chainlit-pg-dump.sql
+    environment:
+      POSTGRES_USER: chainlit
+      POSTGRES_PASSWORD: pg_pass
+      POSTGRES_DB: chainlit
+
+  postgres:
+    image: postgres:${POSTGRES_VERSION:-12}
+    volumes:
+      - pg_db_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: synmetrix_stack
+      POSTGRES_PASSWORD: pg_pass
+      POSTGRES_DB: synmetrix_stack
+
+  cubestore:
+    image: cubejs/cubestore:${CUBESTORE_VERSION:-v0.34.45}
+    environment:
+      - CUBESTORE_REMOTE_DIR=/cube/data
+    volumes:
+      - cube_store_data:/cube/data
+
+  synmetrix:
+    image: synmetrix/stack:${STACK_VERSION:-latest}
+    restart: always
+    ports:
+      - 80:8888 # nginx app
+      - 4000:4000 # cubejs app
+      - 15432:15432 # pg api
+      - 13306:13306 # mysql api
+    environment:
+      # postgres database used by Hasura as a data source and to store Hasura metadata
+      HASURA_GRAPHQL_DATABASE_URL: postgres://synmetrix_stack:pg_pass@postgres:5432/synmetrix_stack
+      # secure your Hasura console via admin secret
+      HASURA_GRAPHQL_ADMIN_SECRET: adminsecret
+      # SMTP credentials to send emails from synmetrix
+      SMTP_HOST: ${SECRETS_SMTP_HOST}
+      SMTP_PORT: ${SECRETS_SMTP_PORT}
+      SMTP_SECURE: ${SECRETS_SMTP_SECURE}
+      SMTP_USER: ${SECRETS_SMTP_USER}
+      SMTP_PASS: ${SECRETS_SMTP_PASS}
+      SMTP_SENDER: ${SECRETS_SMTP_SENDER}
+      # S3 credentials
+      AWS_S3_ACCESS_KEY_ID: ${SECRETS_AWS_S3_ACCESS_KEY_ID}
+      AWS_S3_SECRET_ACCESS_KEY: ${SECRETS_AWS_S3_SECRET_ACCESS_KEY}
+      AWS_S3_BUCKET_NAME: ${SECRETS_AWS_S3_BUCKET_NAME}
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - qdrant-data:/qdrant/storage
+
+  vanna:
+    restart: always
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+
+  wdb:
+    image: shepilovvladislav/wdb:latest
+    ports:
+      - 1990:1984
+
+volumes:
+  pg_db_data:
+  chainlit_pg_db_data:
+  cube_store_data:
+  qdrant-data:
